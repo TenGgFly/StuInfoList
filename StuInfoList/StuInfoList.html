@@ -1,0 +1,346 @@
+﻿<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link href="/Script/layui/css/layui.css"   rel="stylesheet"/>
+    <script type="text/javascript" src="/Script/layui/layui.js"></script>
+    <script src="../../Script/js/jquery-1.8.0.min.js"></script>
+    <script type="text/javascript" src="/Script/js/jquery.min.js"></script>
+    <style>
+    .application {
+        width: 1000px;
+        margin: 0 auto;
+        padding: 40px 0;
+        background: #fff;
+    }
+    /*.data div{
+        padding-left:30px;
+        line-height:50px;
+        float: left;
+        width: 80%;
+        margin: 3px 0 20px 45px;
+        font-size: 16px;
+        background-color:#F3DCF9;
+    }
+    .data div:hover{
+        transform:scale(1.2);
+        color:#5FB878;
+    }*/
+    .layui-row{
+        width: 80%;
+            
+    }
+
+    .layui-col-md6{
+        padding-left:30px;
+        line-height:50px;
+        float: left;          
+        /*margin: 3px 0 20px 45px;*/
+        font-size: 16px;
+        background-color:#F3DCF9;
+    }
+    /*.pp {
+        display:none;
+    }*/
+    .TableInfo {
+        border: 1px #cccccc solid;
+        line-height: 45px;
+        border-collapse: collapse;
+        text-align: center;
+    }
+
+    .TableInfo td {
+        width: 40px;
+        padding: 3px;
+        height: 50px;
+    }
+
+    .TableData td {
+        float: left;
+    }
+
+    td.TableContent {
+        text-align-last: justify;
+        background: #f5f5f5;
+        border-bottom: 1px #d2d2d2 solid;
+        border-right: 1px #e6e6e6 solid;
+    }
+
+    .TableControl td, .TableInfo td.TableFooter, .TableInfo td.TableControl {
+        border: 1px #cecece solid;
+    }
+
+    .TableInfo .TableData td, .TableInfo td.TableData {
+        background: #FFFFFF;
+        border-bottom: 1px #d2d2d2 solid;
+        border-right: 1px #e2e2e2 solid;
+    }
+
+    .layui-table{
+        border-collapse:separate;
+            border-spacing:0px 20px;
+
+
+    }   
+    .layui-icon{
+        font-size:30px;
+        color:#FF5722;
+        padding:30px;
+    }
+
+    .fontStyle{
+        font-weight:bold;
+        color:#009688;
+        font-size:25px;
+    }
+
+    .fontStyle:hover{
+        color:#01AAED;
+    }
+
+    .center{
+        width:70%;
+        margin:0 auto;
+        clear:both;
+        text-align:center;
+    }
+      
+</style>
+    <script type="text/javascript">
+        
+        //console.log(getUrlData());
+        var StudentID = getUrlData().name;//获取url?后的参数值，例：20181443102;
+
+        //获取url？后面参数的方法
+        function getUrlData() {
+            var url = window.location.search;  //url中?之后的部分
+            url = url.substring(1);    //去掉?
+            var dataObj = {};
+            if (url.indexOf('&') > -1) {
+                url = url.split('&');
+                for (var i = 0; i < url.length; i++) {
+                    var arr = url[i].split('=');
+                    dataObj[arr[0]] = arr[1];
+                }
+            }
+            else {
+                url = url.split('=');
+                dataObj[url[0]] = url[1];
+            }
+            return dataObj;
+        }
+
+        layui.use('form', function () {
+            var form = layui.form;
+            var $ = layui.jquery;          
+            //console.log(StudentID)
+            load(StudentID)        
+        });
+
+        function ss() {          
+            load(StudentID);
+        }
+
+        //修改加载数据
+        function load(StudentID) {
+            var $ = layui.jquery;
+            $("#ml_zx").empty();
+            var page = 1;
+            $.ajax({
+                url: 'getall.ashx',
+                type: 'post',
+                dataType: 'json',
+                data: { type: "active" },
+                success: function (res) {
+                    //console.log(res.data);
+                    var data = res.data;
+                    console.log(data);
+                    var FieldID = new Array("");
+                    /*********************************************************************************加载key********************************************************************************************/
+                    var list = '<table class="layui-table">' +
+                              '<tbody>' +
+                                '<tr>' +
+                                  '<td class="TableContent" style="width:80px;text-align:center">姓  名</td> <td class="TableData" style="width:300px"><label id="StudentName"></label></td>' +
+                                  '<td class="TableContent" style="width:80px;text-align:center">学  号</td> <td class="TableData" style="width:300px"><label id="StudentID"></label></td>' +
+                                '</tr>' +
+                                '<tr>' +
+                                  '<td class="TableContent" style="width:80px;text-align:center">专  业</td> <td class="TableData" style="width:300px"><label id="ProfessionalName"></label></td>' +
+                                  '<td class="TableContent" style="width:80px;text-align:center">班  级</td> <td class="TableData" style="width:300px"><label id="OrganName"></label></td>' +
+                                '</tr>' +
+                                '<tr>' +
+                                  '<td class="TableContent" style="width:80px;text-align:center">寝室楼</td> <td class="TableData" style="width:300px"><label id="DormitoryBuild"></label></td>'+
+                                  '<td class="TableContent" style="width:80px;text-align:center">寝室号</td> <td class="TableData" style="width:300px"><label id="Dormitory"></label></td>' ;
+                    
+                    for (i = 0; i < data.length; i++) {
+                        if (i % 2 == 0) { list += '</tr><tr>' }
+                        list +=  '<td class="TableContent" style="width:80px;text-align:center">' + data[i].FullName + '</td>' +
+                                 '<td class="TableData" style="width:300px"><label id="' + data[i].FieldCode + '"></label></td>';
+                        FieldID.push(data[i].FieldCode);  
+                    }
+                    list += '</tr></tbody></table>';
+                    /*********************************************************************************加载key********************************************************************************************/
+                    //console.log(list);
+                    $("#ml_zx").append(list);
+                    var FieldID = FieldID.join(",").substring(1);    //FieldID之间用,分隔(从逻辑1开始)
+                    console.log(FieldID)
+                    $.ajax({
+                        url: 'Change.ashx',
+                        type: 'post',
+                        dataType: 'text',
+                        data: { FieldID: FieldID, type: "writ" },
+                        success: function (res) {
+                            console.log("成功");
+                        }
+                    })
+
+                    layui.use(['jquery', 'util', 'element'], function () {
+                        var element = layui.element;
+                        // sumData/allData*100=进度条进度
+                        var sumData=0;//记录数总和
+                        var allData=0;//所有数据
+                        var $ = layui.jquery;
+                        $.ajax({
+                            url: 'getone.ashx?StudentID=' + StudentID + '',
+                            type: 'post',
+                            dataType: 'json',
+                            success: function (res) {
+                                console.log(data);
+                                console.log(res.data[0]);
+                                console.log(res.data[0].IsLock)                             
+                                //$("#StudentCode").html(res.data[0].StudentCode);
+                                $("#StudentID").html(res.data[0].StudentID); allData++;
+                                if (res.data[0].StudentID) sumData++;
+                                $("#StudentName").html(res.data[0].StudentName); allData++;
+                                if (res.data[0].StudentName) sumData++;
+                                $("#StudentNameTop").html(res.data[0].StudentName); 
+                                $("#College").html(res.data[0].College); allData++;
+                                if (res.data[0].College) sumData++;
+                                $("#ProfessionalName").html(res.data[0].ProfessionalName); allData++;
+                                if (res.data[0].ProfessionalName) sumData++;
+                                $("#DormitoryBuild").html(res.data[0].DormitoryBuild); allData++;
+                                if (res.data[0].DormitoryBuild) sumData++;
+                                $("#Dormitory").html(res.data[0].Dormitory); allData++;
+                                if (res.data[0].Dormitory) sumData++;
+                                $("#OrganName").html(res.data[0].OrganName); allData++;
+                                if (res.data[0].OrganName) sumData++;
+                                $("#Address").html(res.data[0].Address); allData++;
+                                if (res.data[0].Address) sumData++;
+                                $("#Sex").html(res.data[0].Sex == "0" ? "男" : "女"); allData++;
+                                if (res.data[0].Sex) sumData++;
+                                //$("#Age").html(res.data[0].Age);
+                                for (i = 0; i < data.length; i++) {
+                                    allData++;
+                                    var zdata = res.data[0]
+                                    console.log(zdata["" + data[i].FieldCode + ""]);
+                                    $("#" + data[i].FieldCode).html(zdata["" + data[i].FieldCode + ""]);
+                                    if (zdata["" + data[i].FieldCode + ""]) sumData++;
+                                }
+                                element.progress('demo', ''+(sumData / allData * 100).toFixed(2)+'%');//赋值给进度条展示进度
+                                $("#infoPer").html((sumData/allData*100).toFixed(2)+'%');
+                            }
+                        });
+                    })
+                }
+            })
+        }
+
+        function getUrlParam(key) {
+            // 获取参数
+            var url = window.location.search;
+            // 正则筛选地址栏
+            var reg = new RegExp("(^|&)" + key + "=([^&]*)(&|$)");
+            // 匹配目标参数
+            var result = url.substr(1).match(reg);
+            //返回参数值
+            return result ? decodeURIComponent(result[2]) : null;
+        }
+
+        function closeI() {
+            var index = parent.layer.getFrameIndex(window.name); //先得到当前iframe层的索引
+            window.parent.bc();        //父页面bc()
+            parent.layer.close(index); //再执行关闭
+
+        }
+
+        function btnedit() {
+            layui.use(['jquery', 'layer'], function () {
+                var $ = layui.jquery;
+                var layer = layui.layer;
+                var timer;
+                $.ajax({
+                    url: 'getone.ashx?StudentID=' + StudentID + '',
+                    type: 'post',
+                    dataType: 'json',
+                    success: function (res) {
+                        console.log(res.data[0]);
+                        $.ajax({
+                            url: 'gettime.ashx',
+                            type: 'post',
+                            dataType: 'text',
+                            async:'false',
+                            success: function (ress) {
+                                console.log(timer);
+                                if (res.data[0].IsLock == 1) {//判断编辑按钮是否可用
+                                    layer.msg('信息已被锁定！', { icon: 5 });
+                                } else if (ress == 1) {
+                                    console.log(timer);
+                                    layer.msg('信息正在维护中！', { icon: 5 });
+                                }
+                                else {
+                                    layer.open({
+                                        id: 'Unit_edit',
+                                        type: 2,//页面层
+                                        title: '<span><a class="fontStyle">个人中心</a> | 学生基本信息</span>',
+                                        maxmin: false,   //关闭最小化最大化
+                                        area: ['100%', '100%'], //宽高
+                                        skin: 'layer-ext-moon', //加上边框
+                                        content: ['UpListInfo.html?StudentID=' + StudentID + '', 'yes']  //跳转编辑页面并传值
+                                    });
+                                }
+                            }
+                        })         
+                    }
+                }); 
+            })
+        }
+
+
+    </script>
+    <script>
+        function closeif() {
+            var index = parent.layer.getFrameIndex(window.name); //先得到当前iframe层的索引
+            window.parent.ss();        //父页面ss()
+            parent.layer.close(index); //再执行关闭
+        }
+        function lookall() {
+            $(".pp").css("display", "block");
+        }
+    </script>
+</head>
+<body>
+    <form id="form1" runat="server">
+        <blockquote class="layui-elem-quote">
+            <span><a class="fontStyle">个人中心</a> | 学生基本信息</span>
+                <div style="float:right;margin-top: -7px">
+                <a class="layui-btn layui-btn-sm" onclick="btnedit()">编辑信息</a> 
+            </div>
+        </blockquote>
+
+        <div class="layui-icon layui-icon-username"><td class="TableData" style="width:300px"><label id="StudentNameTop"></label></div>
+        <div class="center"><spqn style="color:#01AAED">信息完善度 : </spqn><label id="infoPer" style="color:#FF5722"></label></div>
+        <div class="center">
+            <div class="layui-progress layui-progress-big" lay-filter="demo" lay-showPercent="true" >
+                <div class="layui-progress-bar layui-bg-orange" lay-percent=""></div>
+            </div>
+        </div>
+        <hr class="layui-bg-orange"/>
+
+      <div class="application">   
+            <div id="ml_zx" class="data" >
+               
+          </div>     
+      </div>
+    </form>
+</body>
+</html>
